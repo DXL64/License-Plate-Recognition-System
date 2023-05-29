@@ -223,11 +223,12 @@ class Ui_mainWindow(object):
         self.editLP.toggled['bool'].connect(self.textEdit.setEnabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
 
+        # "rtsp://localhost:8554/ds-test"
         self.Worker1 = Worker("rtsp://localhost:8554/ds-test")
         self.Worker1.start()
         self.Worker1.ImageUpdate.connect(self.ImageUpdate_Work1)
 
-        self.Worker2 = Worker(0)
+        self.Worker2 = Worker("rtsp://admin:abcd1234@10.10.7.233:554")
         self.Worker2.start()
         self.Worker2.ImageUpdate.connect(self.ImageUpdate_Work2)
 
@@ -270,7 +271,7 @@ class Worker(QThread):
                 Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 FlippedImage = cv2.flip(Image, 1)
                 ConvertToQtFormat = QImage(FlippedImage.data, FlippedImage.shape[1], FlippedImage.shape[0], QImage.Format_RGB888)
-                Pic = ConvertToQtFormat.scaled(640, 480, Qt.KeepAspectRatio)
+                Pic = ConvertToQtFormat.scaled(400, 400, Qt.KeepAspectRatio)
                 self.ImageUpdate.emit(Pic)
 
     def stop(self):
