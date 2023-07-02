@@ -9,10 +9,16 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import sys
+from PyQt5.QtCore import QObject
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from popup_window import Ui_popup_window
+import cv2
 
 class Ui_popup_window(object):
-    def setupUi(self, popup_window):
+    def setupUi(self, popup_window, src):
         popup_window.setObjectName("popup_window")
         popup_window.resize(1080, 720)
         self.centralwidget = QtWidgets.QWidget(popup_window)
@@ -32,11 +38,40 @@ class Ui_popup_window(object):
         self.retranslateUi(popup_window)
         QtCore.QMetaObject.connectSlotsByName(popup_window)
 
+        self.Worker = Worker(src)
+        self.Worker.start()
+        self.Worker.ImageUpdate.connect(self.ImageUpdate_Worker)
+
+    def ImageUpdate_Worker(self, Image):
+        self.label.setPixmap(QPixmap.fromImage(Image))
+
     def retranslateUi(self, popup_window):
         _translate = QtCore.QCoreApplication.translate
         popup_window.setWindowTitle(_translate("popup_window", "MainWindow"))
         self.label.setText(_translate("popup_window", "TextLabel"))
 
+class Worker(QThread):
+    ImageUpdate = pyqtSignal(QImage)
+    def __init__(self, url) -> None:
+        super().__init__()
+        self.rtsp_url = url
+        # self.ImageUpdate = pyqtSignal(QImage)
+
+    def run(self):
+        self.ThreadActive = True
+        Capture = cv2.VideoCapture(self.rtsp_url)
+        while self.ThreadActive:
+            ret, frame = Capture.read()
+            if ret:
+                Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                FlippedImage = cv2.flip(Image, 1)
+                ConvertToQtFormat = QImage(FlippedImage.data, FlippedImage.shape[1], FlippedImage.shape[0], QImage.Format_RGB888)
+                Pic = ConvertToQtFormat.scaled(400, 400, Qt.KeepAspectRatio)
+                self.ImageUpdate.emit(Pic)
+
+    def stop(self):
+        self.ThreadActive = False
+        self.quit()
 
 if __name__ == "__main__":
     import sys
