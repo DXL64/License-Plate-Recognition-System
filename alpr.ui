@@ -564,6 +564,58 @@ border-color: rgb(0, 0, 0);
      <string/>
     </property>
    </widget>
+   <widget class="QPushButton" name="plate_camera">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>90</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Phóng to</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="plate_image">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>90</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Phóng to</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="overview_image">
+    <property name="geometry">
+     <rect>
+      <x>970</x>
+      <y>90</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Phóng to</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="overview_camera">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>490</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Phóng to</string>
+    </property>
+   </widget>
    <zorder>label_8</zorder>
    <zorder>label_7</zorder>
    <zorder>label_6</zorder>
@@ -587,6 +639,10 @@ border-color: rgb(0, 0, 0);
    <zorder>save</zorder>
    <zorder>list_car</zorder>
    <zorder>t_list_car</zorder>
+   <zorder>plate_camera</zorder>
+   <zorder>plate_image</zorder>
+   <zorder>overview_image</zorder>
+   <zorder>overview_camera</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

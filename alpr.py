@@ -15,7 +15,8 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-import cv2
+from popup_window import Ui_popup_window
+# import cv2
 
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
@@ -29,9 +30,9 @@ class Ui_mainWindow(object):
         mainWindow.setToolTipDuration(-1)
         self.centralwidget = QtWidgets.QWidget(mainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.plate_camera = QLabel(self.centralwidget)
-        self.plate_camera.setGeometry(QtCore.QRect(0, 90, 400, 400))
-        self.plate_camera.setObjectName("plate_camera")
+        self.b_plate_camera = QLabel(self.centralwidget)
+        self.b_plate_camera.setGeometry(QtCore.QRect(0, 90, 400, 400))
+        self.b_plate_camera.setObjectName("b_plate_camera")
         self.plate_image = QtWidgets.QGraphicsView(self.centralwidget)
         self.plate_image.setGeometry(QtCore.QRect(400, 90, 400, 400))
         self.plate_image.setObjectName("plate_image")
@@ -85,6 +86,20 @@ class Ui_mainWindow(object):
         self.t_plate_image.setOpenExternalLinks(False)
         self.t_plate_image.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.t_plate_image.setObjectName("t_plate_image")
+
+        self.b_plate_camera = QtWidgets.QPushButton(self.centralwidget, clicked = lambda: self.open_window())
+        self.b_plate_camera.setGeometry(QtCore.QRect(170, 90, 91, 41))
+        self.b_plate_camera.setObjectName("plate_camera")
+        self.b_plate_image = QtWidgets.QPushButton(self.centralwidget, clicked = lambda: self.open_window())
+        self.b_plate_image.setGeometry(QtCore.QRect(550, 90, 91, 41))
+        self.b_plate_image.setObjectName("plate_image")
+        self.b_overview_image = QtWidgets.QPushButton(self.centralwidget, clicked = lambda: self.open_window())
+        self.b_overview_image.setGeometry(QtCore.QRect(970, 90, 91, 41))
+        self.b_overview_image.setObjectName("overview_image")
+        self.b_overview_camera = QtWidgets.QPushButton(self.centralwidget, clicked = lambda: self.open_window())
+        self.b_overview_camera.setGeometry(QtCore.QRect(170, 490, 91, 41))
+        self.b_overview_camera.setObjectName("overview_camera")
+
         self.editLP = QtWidgets.QCheckBox(self.centralwidget)
         self.editLP.setEnabled(True)
         self.editLP.setGeometry(QtCore.QRect(570, 500, 141, 51))
@@ -224,16 +239,16 @@ class Ui_mainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
 
         # "rtsp://localhost:8554/ds-test"
-        self.Worker1 = Worker("rtsp://localhost:8554/ds-test")
-        self.Worker1.start()
-        self.Worker1.ImageUpdate.connect(self.ImageUpdate_Work1)
+        # self.Worker1 = Worker("rtsp://localhost:8554/ds-test")
+        # self.Worker1.start()
+        # self.Worker1.ImageUpdate.connect(self.ImageUpdate_Work1)
 
-        self.Worker2 = Worker("rtsp://admin:abcd1234@10.10.7.233:554")
-        self.Worker2.start()
-        self.Worker2.ImageUpdate.connect(self.ImageUpdate_Work2)
+        # self.Worker2 = Worker("rtsp://admin:abcd1234@10.10.7.233:554")
+        # self.Worker2.start()
+        # self.Worker2.ImageUpdate.connect(self.ImageUpdate_Work2)
 
     def ImageUpdate_Work1(self, Image):
-        self.plate_camera.setPixmap(QPixmap.fromImage(Image))
+        self.b_plate_camera.setPixmap(QPixmap.fromImage(Image))
        
     def ImageUpdate_Work2(self, Image):
         self.overview_camera.setPixmap(QPixmap.fromImage(Image))
@@ -254,29 +269,39 @@ class Ui_mainWindow(object):
         self.label_3.setText(_translate("mainWindow", "Khách hàng"))
         self.label_4.setText(_translate("mainWindow", "Trạng thái"))
         self.t_list_car.setText(_translate("mainWindow", "Danh sách xe vào cổng"))
+        self.b_plate_camera.setText(_translate("mainWindow", "Phóng to"))
+        self.b_plate_image.setText(_translate("mainWindow", "Phóng to"))
+        self.b_overview_image.setText(_translate("mainWindow", "Phóng to"))
+        self.b_overview_camera.setText(_translate("mainWindow", "Phóng to"))
+    
+    def open_window(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_popup_window()
+        self.ui.setupUi(self.window)
+        self.window.show()
 
-class Worker(QThread):
-    ImageUpdate = pyqtSignal(QImage)
-    def __init__(self, url) -> None:
-        super().__init__()
-        self.rtsp_url = url
-        # self.ImageUpdate = pyqtSignal(QImage)
+# class Worker(QThread):
+#     ImageUpdate = pyqtSignal(QImage)
+#     def __init__(self, url) -> None:
+#         super().__init__()
+#         self.rtsp_url = url
+#         # self.ImageUpdate = pyqtSignal(QImage)
 
-    def run(self):
-        self.ThreadActive = True
-        Capture = cv2.VideoCapture(self.rtsp_url)
-        while self.ThreadActive:
-            ret, frame = Capture.read()
-            if ret:
-                Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                FlippedImage = cv2.flip(Image, 1)
-                ConvertToQtFormat = QImage(FlippedImage.data, FlippedImage.shape[1], FlippedImage.shape[0], QImage.Format_RGB888)
-                Pic = ConvertToQtFormat.scaled(400, 400, Qt.KeepAspectRatio)
-                self.ImageUpdate.emit(Pic)
+#     def run(self):
+#         self.ThreadActive = True
+#         Capture = cv2.VideoCapture(self.rtsp_url)
+#         while self.ThreadActive:
+#             ret, frame = Capture.read()
+#             if ret:
+#                 Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#                 FlippedImage = cv2.flip(Image, 1)
+#                 ConvertToQtFormat = QImage(FlippedImage.data, FlippedImage.shape[1], FlippedImage.shape[0], QImage.Format_RGB888)
+#                 Pic = ConvertToQtFormat.scaled(400, 400, Qt.KeepAspectRatio)
+#                 self.ImageUpdate.emit(Pic)
 
-    def stop(self):
-        self.ThreadActive = False
-        self.quit()
+#     def stop(self):
+#         self.ThreadActive = False
+#         self.quit()
         
 if __name__ == "__main__":
     import sys
